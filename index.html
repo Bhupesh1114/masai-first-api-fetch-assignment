@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OMDB || Search Movies</title>
+    <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+    <div id="container">
+        <form action="" id="form">
+            <label for="movie name">Enter Movie Name</label><br>
+            <input type="text" name="movie" id="movie" required><br>
+            <label for="year">Enter Year</label><br>
+            <input type="number" id="year" required><br>
+            <input type="submit" id="submit" value="Search">
+        </form>
+        
+    </div>
+    <div id="searchedMovie"></div>
+
+    <script>
+document.querySelector("#form").addEventListener("submit",inputMovie);
+
+
+
+function inputMovie(event) {
+    event.preventDefault();
+    let input = document.querySelector("#movie").value;
+    let year = document.querySelector("#year").value;
+    getData();
+    async function getData(){
+    try{
+     let res = await fetch(`https://www.omdbapi.com/?i=tt3896198&apikey=ba64c43c&t=${input}&y=${year}`)
+     let data = await res.json();
+     displayMovie(data);
+    }catch(error){
+      console.log("error:",error);
+    }
+}
+}
+
+
+
+function displayMovie(data){
+    
+    document.querySelector("#searchedMovie").innerHTML = null;
+    if(data.Title !== undefined){
+        let div1 = create("div");
+    let div2 = create("div");
+    let image = create("img");
+    image.src = data.Poster;
+    let title = create("h2")
+    title.innerText = data.Title;
+    let rating = create("p")
+    rating.innerText = data.imdbRating;
+    let relDate = create("p");
+    relDate.innerText = data.Released;
+    let director = create("p");
+    director.innerText = `Director: ${data.Director}`
+    div1.append(title,relDate,rating,director);
+
+    div2.append(image,div1);
+   
+    document.querySelector("#searchedMovie").append(div2);
+
+    if(+data.imdbRating > 8){
+        let para = create("p");
+        para.innerText = "Recommended";
+        document.querySelector("#searchedMovie >div").append(para);
+
+    }
+    document.querySelector("#movie").value = "";
+    document.querySelector("#year").value = "";
+    }else{
+        let poster = create("img");
+        poster.src = "https://media4.giphy.com/media/UoeaPqYrimha6rdTFV/200.gif";
+        document.querySelector("#searchedMovie").append(poster);
+        document.querySelector("#movie").value = "";
+        document.querySelector("#year").value = "";
+    }
+    
+}
+
+
+//  Tag creator Function
+
+function create(tag){
+    return document.createElement(tag);
+}
+
+
+    </script>
+</body>
+</html>
